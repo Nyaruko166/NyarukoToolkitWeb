@@ -2,7 +2,6 @@ package me.nyaruko166.nyarukotoolkitweb.model;
 
 import jakarta.persistence.*;
 import lombok.*;
-import org.springframework.format.annotation.DateTimeFormat;
 
 import java.util.Date;
 

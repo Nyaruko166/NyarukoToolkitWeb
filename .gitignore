@@ -1,5 +1,6 @@
 HELP.md
 cred.json
+yt_cred.json
 src/main/resources/application.properties
 target/
 !.mvn/wrapper/maven-wrapper.jar
