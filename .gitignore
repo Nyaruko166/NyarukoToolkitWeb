@@ -2,6 +2,7 @@ HELP.md
 cred.json
 yt_cred.json
 src/main/resources/application.properties
+./libs
 target/
 !.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
