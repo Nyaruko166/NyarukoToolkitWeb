@@ -8,10 +8,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class NyarukoToolKitWebApplication {
 
     public static void main(String[] args) {
-
-        Bot.runBot();
-
         SpringApplication.run(NyarukoToolKitWebApplication.class, args);
+        Bot.runBot();
     }
 
 }

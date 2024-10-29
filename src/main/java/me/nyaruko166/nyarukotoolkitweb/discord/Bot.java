@@ -16,16 +16,23 @@ public class Bot {
     static Logger log = LogManager.getLogger(Bot.class);
 
     private static final String DISCORD_TOKEN = Config
-            .getInstance().getProperty().getDiscord_token();
+            .getProperty().getDiscord_token();
+    public static JDA api;
 
     public static void runBot() {
         log.info("Bot is starting...");
-        JDA jda = JDABuilder.createLight(DISCORD_TOKEN, EnumSet.of(GatewayIntent.GUILD_MESSAGES,
+        api = JDABuilder.createLight(DISCORD_TOKEN, EnumSet.of(GatewayIntent.GUILD_MESSAGES,
                         GatewayIntent.GUILD_MESSAGE_REACTIONS, GatewayIntent.MESSAGE_CONTENT))
                 .setActivity(Activity.of(Activity.ActivityType.WATCHING, "Just a random bot passing through."))
                 .addEventListeners(new MessageReceiveListener())
 //                .addEventListeners(new SlashCommandListener())
                 .build();
+    }
+
+    public static void sendClip(String id) {
+        api.getGuildById(Config.getProperty().getGuild_id())
+                .getTextChannelById(Config.getProperty().getChannel_id())
+                .sendMessage("https://youtu.be/" + id).queue();
     }
 //    public static void main(String[] args) {
 //        JDA jda = JDABuilder.createLight(DISCORD_TOKEN, EnumSet.of(GatewayIntent.GUILD_MESSAGES,

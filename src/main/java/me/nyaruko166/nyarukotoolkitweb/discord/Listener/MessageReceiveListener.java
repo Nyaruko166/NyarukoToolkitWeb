@@ -1,68 +1,79 @@
 package me.nyaruko166.nyarukotoolkitweb.discord.Listener;
 
+import me.nyaruko166.nyarukotoolkitweb.config.Config;
 import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
+import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.awt.*;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 public class MessageReceiveListener extends ListenerAdapter {
 
-    private final String prefix = "!";
+    private final String PREFIX = "!";
 
-    private Logger log = LogManager.getLogger(MessageReceiveListener.class);
+    private final Logger log = LogManager.getLogger(MessageReceiveListener.class);
+    private final DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
 
     @Override
     public void onMessageReceived(MessageReceivedEvent event) {
-        if (event.getAuthor().isBot()) return;
-        // We don't want to respond to other bot accounts, including ourself
-        Message message = event.getMessage();
-        String content = message.getContentRaw();
+        if (event.getAuthor().isBot()) return; // Who care about bot? Bruh wanna make a recursive bot xD
+        String message = event.getMessage().getContentRaw();
+        ;
         // getContentRaw() is an atomic getter
         // getContentDisplay() is a lazy getter which modifies the content for e.g. console view (strip discord formatting)
-        if (content.equals(prefix + "ping")) {
-            MessageChannel channel = event.getChannel();
-//            channel.sendMessage("Pong!").queue(); // Important to call .queue() on the RestAction returned by sendMessage(...)
-//            MessageChannel channel = new PrivateChannelImpl(jda, Long.parseLong("1126910245990584424"), null);
-            EmbedBuilder embedBuilder = new EmbedBuilder();
 
-            embedBuilder.setTitle("Test title", "https://youtu.be/3HiwHYM-0Ow");
-
-            embedBuilder.setColor(Color.GREEN);
-
-            embedBuilder.setDescription("https://youtu.be/3HiwHYM-0Ow");
-
-            embedBuilder.setAuthor("Nyaruko166", "https://www.facebook.com/nyaruko166", "https://i.imgur.com/aINmd3V.jpg");
-
-            embedBuilder.setFooter("seg", event.getAuthor().getAvatarUrl());
-
-            channel.sendMessageEmbeds(embedBuilder.build()).queue();
-
-//            channel.sendMessageEmbeds(new MessageEmbed("","","", EmbedType.VIDEO))
-        }
-        if (content.equals(prefix + "test")) {
-            MessageChannel channel = event.getChannel();
-
-//            EmbedBuilder embedBuilder = new EmbedBuilder();
-//
-//            embedBuilder.setTitle("Test title", "https://youtu.be/3HiwHYM-0Ow");
-//
-//            embedBuilder.setColor(Color.GREEN);
-//
-//            embedBuilder.setDescription("https://youtu.be/3HiwHYM-0Ow");
-//
-//            embedBuilder.setAuthor("Nyaruko166", "https://www.facebook.com/nyaruko166", "https://i.imgur.com/aINmd3V.jpg");
-//
-//            embedBuilder.setFooter("seg", event.getAuthor().getAvatarUrl());
-            log.info("Info");
-            log.debug("Debug");
-            channel.sendMessage("https://youtu.be/3HiwHYM-0Ow").queue();
+        if (message.startsWith(PREFIX)) {
+            String command = message.substring(PREFIX.length()).toLowerCase();
+            log.info("Author: {} | Command: {}", event.getAuthor().getName(), command);
+            switch (command) {
+                case "ping" -> event.getChannel().sendMessage("Pong!").queue();
+                case "setup clip" -> {
+                    if (!hasAdminPermission(event)) return;
+                    String guildID = event.getGuild().getId();
+                    String channelID = event.getChannel().getId();
+                    event.getChannel().sendMessageEmbeds(new EmbedBuilder()
+                                    .setAuthor(event.getAuthor().getName(), "https://www.facebook.com/nyaruko166", event.getAuthor().getAvatarUrl())
+                                    .setTitle("Setting auto clip upload channel...")
+                                    .setDescription("Day la description? What do u expect?")
+                                    .setFooter(String.format("%s - %s", event.getJDA().getSelfUser().getName(), LocalDateTime.now().format(timeFormatter)), event.getJDA().getSelfUser().getAvatarUrl())
+                                    .setColor(Color.GREEN)
+                                    .build())
+                            .queue();
+                    event.getMessage().delete().queue();
+                    Config.getProperty().setGuild_id(guildID);
+                    Config.getProperty().setChannel_id(channelID);
+                    Config.updateConfig();
+                }
+                case "help" -> sendHelpMessage(event);
+                default ->
+                        event.getChannel().sendMessage("Unknown command! Use `!help` for a list of commands.").queue();
+            }
         }
     }
 
+    private void sendHelpMessage(MessageReceivedEvent event) {
+        EmbedBuilder helpEmbed = new EmbedBuilder();
+        helpEmbed.setTitle("Bot Commands");
+        helpEmbed.setColor(Color.BLUE);
+        helpEmbed.setDescription("Here are the available commands:");
+        helpEmbed.addField("!ping", "Replies with 'Pong!'", false);
+        helpEmbed.addField("!setup clip", "Sech.", false);
+        helpEmbed.addField("!help", "Displays this help message.", false);
 
+        event.getChannel().sendMessageEmbeds(helpEmbed.build()).queue();
+    }
+
+    private boolean hasAdminPermission(MessageReceivedEvent event) {
+        if (event.getMember().hasPermission(Permission.ADMINISTRATOR)) {
+            return true;
+        } else {
+            event.getChannel().sendMessage("You don't have permission to use this command.").queue();
+            return false;
+        }
+    }
 }

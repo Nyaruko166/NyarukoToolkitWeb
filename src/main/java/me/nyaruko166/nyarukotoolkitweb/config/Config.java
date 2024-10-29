@@ -12,22 +12,25 @@ import java.io.IOException;
 
 public class Config {
 
-    Logger log = LogManager.getLogger(Config.class);
+    static Logger log = LogManager.getLogger(Config.class);
+    static Gson gson = new Gson();
+    private static final File configFile = new File("./libs/config.json");
 
     private static Config instance;
-
-    private AppConfig appConfig;
+    private static AppConfig appConfig;
 
     private Config() {
-        Gson gson = new Gson();
-        File configFile = new File("./libs/config.json");
         if (!configFile.exists()) {
             try {
-                FileUtils.writeStringToFile(configFile, gson.toJson(new AppConfig("")), "UTF-8");
+                FileUtils.writeStringToFile(configFile, gson.toJson(appConfig.configTemplate()), "UTF-8");
             } catch (IOException e) {
                 log.error(e);
             }
         }
+        loadConfig();
+    }
+
+    private void loadConfig() {
         try {
             appConfig = gson.fromJson(new FileReader(configFile), AppConfig.class);
             if (appConfig.getDiscord_token().isBlank()) {
@@ -36,19 +39,30 @@ public class Config {
                 System.exit(1);
             }
         } catch (FileNotFoundException e) {
-            log.error(e);
+            log.error("Config file not found", e);
         }
     }
 
-    public static Config getInstance() {
+    public static void updateConfig() {
+        try {
+            FileUtils.writeStringToFile(configFile, gson.toJson(appConfig), "UTF-8");
+            log.info("Configuration updated successfully.");
+        } catch (IOException e) {
+            log.error("Failed to update config file", e);
+        }
+    }
+
+//    public static Config getInstance() {
+//        if (instance == null) {
+//            instance = new Config();
+//        }
+//        return instance;
+//    }
+
+    public static AppConfig getProperty() {
         if (instance == null) {
             instance = new Config();
         }
-        return instance;
-    }
-
-    public AppConfig getProperty() {
         return appConfig;
     }
-
 }
