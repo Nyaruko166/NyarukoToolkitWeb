@@ -1,5 +1,6 @@
 package me.nyaruko166.nyarukotoolkitweb;
 
+import me.nyaruko166.nyarukotoolkitweb.discord.Bot;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
@@ -7,6 +8,9 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class NyarukoToolKitWebApplication {
 
     public static void main(String[] args) {
+
+        Bot.runBot();
+
         SpringApplication.run(NyarukoToolKitWebApplication.class, args);
     }
 
