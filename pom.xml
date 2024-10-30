@@ -12,6 +12,7 @@
     <artifactId>NyarukoToolkitWeb</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>NyarukoToolKitWeb</name>
+    <packaging>jar</packaging>
     <description>NyarukoToolKitWeb</description>
     <url/>
     <licenses>
@@ -83,7 +84,6 @@
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <version>1.18.34</version>
-            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>com.github.librepdf</groupId>
