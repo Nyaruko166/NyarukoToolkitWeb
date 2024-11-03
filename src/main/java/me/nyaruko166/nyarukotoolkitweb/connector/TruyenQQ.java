@@ -141,15 +141,4 @@ public class TruyenQQ implements SourceConnector {
         // Replace all occurrences of "Chuong n" or "Chương n" with "Chapter n"
         return title.replaceAll("Chương|chương|Chuong", "Chapter");
     }
-
-    public static void main(String[] args) {
-        TruyenQQ truyenQQ = new TruyenQQ();
-        String mangaUrl = "https://truyenqq2.com/truyen-tranh/mikakunin-de-shinkoukei-s12337";
-        String title = truyenQQ.getMangaTitle(mangaUrl);
-        List<Chapter> lstChapter = truyenQQ.getChapterList(mangaUrl);
-        for (Chapter chapter : lstChapter) {
-            System.out.println(chapter.toString());
-        }
-        truyenQQ.downloadManga(title, lstChapter);
-    }
 }
