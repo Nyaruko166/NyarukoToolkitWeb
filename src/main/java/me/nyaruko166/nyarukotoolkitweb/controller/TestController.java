@@ -1,17 +1,14 @@
 package me.nyaruko166.nyarukotoolkitweb.controller;
 
-import me.nyaruko166.nyarukotoolkitweb.discord.Bot;
 import me.nyaruko166.nyarukotoolkitweb.model.Manga;
 import me.nyaruko166.nyarukotoolkitweb.repository.MangaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
 
 import java.util.List;
-import java.util.Map;
 
-@RestController
+@Controller
 public class TestController {
 
     @Autowired

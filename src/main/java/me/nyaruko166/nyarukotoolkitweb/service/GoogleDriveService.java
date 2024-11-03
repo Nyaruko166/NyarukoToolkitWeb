@@ -1,4 +1,4 @@
-package me.nyaruko166.nyarukotoolkitweb;
+package me.nyaruko166.nyarukotoolkitweb.service;
 
 import com.google.api.client.googleapis.media.MediaHttpUploader;
 import com.google.api.client.http.InputStreamContent;
@@ -6,25 +6,27 @@ import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.gson.GsonFactory;
 import com.google.api.services.drive.Drive;
 import com.google.api.services.drive.DriveScopes;
+import com.google.api.services.drive.model.File;
 import com.google.api.services.drive.model.FileList;
 import com.google.auth.http.HttpCredentialsAdapter;
 import com.google.auth.oauth2.GoogleCredentials;
 import me.nyaruko166.nyarukotoolkitweb.handler.FileUploadProgressListener;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.stereotype.Service;
 
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 
-public class Test {
+@Service
+public class GoogleDriveService {
 
-    static Logger log = LogManager.getLogger(Test.class);
+    static Logger log = LogManager.getLogger(GoogleDriveService.class);
 
     private static final Drive driveService = getService();
-    private static final String SERVICE_ACCOUNT_KEY_PATH = "./cred.json";
+    private static final String SERVICE_ACCOUNT_KEY_PATH = "./libs/cred.json";
     private static final String FOLDER_ID = "1UkZq5NaJ3D4YRscX9tE7Jj2Hnb_CnOYc";
     private static final String SUB_FOLDER_ID = "1mdvYJ-ltM4oV6LnOtAUmCZXPwG6v0Wbd";
 
@@ -47,7 +49,7 @@ public class Test {
                 new NetHttpTransport(),
                 new GsonFactory(),
                 new HttpCredentialsAdapter(credentials))
-                .setApplicationName("Google-Drive-API-Resumable-Upload")
+                .setApplicationName("Google-Drive-Resumable-Uploader")
                 .build();
     }
 
@@ -57,7 +59,7 @@ public class Test {
         FileList result = null;
         try {
             result = driveService.files().list()
-                    .setQ(query) // Query to list all files (you can adjust this)
+                    .setQ(query) // Query to list all files
                     .setSpaces("drive")
                     .setFields("nextPageToken, files(id, name)")
                     .setPageSize(10) // Adjust page size as needed
@@ -66,7 +68,7 @@ public class Test {
             log.error(e);
         }
 
-        List<com.google.api.services.drive.model.File> files = result.getFiles();
+        List<File> files = result.getFiles();
         if (files == null || files.isEmpty()) {
             log.info("No files found.");
         } else {
@@ -77,7 +79,7 @@ public class Test {
         }
     }
 
-    public static void uploadFile(File zipFile, String mimeType, String folderId) throws IOException {
+    public static void uploadFile(java.io.File zipFile, String mimeType, String folderId) throws IOException {
         // Create file metadata
         com.google.api.services.drive.model.File fileMetadata = new com.google.api.services.drive.model.File();
         fileMetadata.setName(zipFile.getName());
@@ -115,12 +117,4 @@ public class Test {
         }
     }
 
-    public static void main(String[] args) {
-//            deleteFile("1JbsPvnsPErj2m2r15dCnqJEjiRsYzos4");
-//            File filePath = new File(Paths.get("C:\\Users\\ADMIN\\AppData\\Roaming\\r2modmanPlus-local\\GTFO\\profiles\\Default\\Default.zip").toString());
-//            String mimeType = "application/zip";  // For ZIP files
-//
-//            uploadFile(filePath, mimeType, SUB_FOLDER_ID);
-        viewFiles();
-    }
 }

@@ -9,6 +9,7 @@ import net.dv8tion.jda.api.requests.GatewayIntent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import javax.annotation.Nullable;
 import java.util.EnumSet;
 
 public class Bot {
@@ -23,7 +24,7 @@ public class Bot {
         log.info("Bot is starting...");
         api = JDABuilder.createLight(DISCORD_TOKEN, EnumSet.of(GatewayIntent.GUILD_MESSAGES,
                         GatewayIntent.GUILD_MESSAGE_REACTIONS, GatewayIntent.MESSAGE_CONTENT))
-                .setActivity(Activity.of(Activity.ActivityType.WATCHING, "Just a random bot passing through."))
+                .setActivity(Activity.of(Activity.ActivityType.CUSTOM_STATUS, "Just a random bot passing through."))
                 .addEventListeners(new MessageReceiveListener())
 //                .addEventListeners(new SlashCommandListener())
                 .build();

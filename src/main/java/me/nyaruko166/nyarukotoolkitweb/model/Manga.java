@@ -26,6 +26,9 @@ public class Manga {
     @Column(name = "Title")
     private String title;
 
+    @Column(name = "Cover")
+    private String cover;
+
     @Column(name = "SourceURL")
     private String sourceURL;
 

@@ -9,7 +9,7 @@ public class NyarukoToolKitWebApplication {
 
     public static void main(String[] args) {
         SpringApplication.run(NyarukoToolKitWebApplication.class, args);
-        Bot.runBot();
+//        Bot.runBot();
     }
 
 }

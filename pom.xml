@@ -10,7 +10,7 @@
     </parent>
     <groupId>me.nyaruko166</groupId>
     <artifactId>NyarukoToolkitWeb</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>0.0.1</version>
     <name>NyarukoToolKitWeb</name>
     <packaging>jar</packaging>
     <description>NyarukoToolKitWeb</description>
