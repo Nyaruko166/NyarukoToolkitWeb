@@ -11,8 +11,10 @@ import com.google.api.services.drive.model.FileList;
 import com.google.auth.http.HttpCredentialsAdapter;
 import com.google.auth.oauth2.GoogleCredentials;
 import me.nyaruko166.nyarukotoolkitweb.handler.FileUploadProgressListener;
+import me.nyaruko166.nyarukotoolkitweb.util.ByteUnitFormatter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.FileInputStream;
@@ -23,14 +25,15 @@ import java.util.List;
 @Service
 public class GoogleDriveService {
 
-    static Logger log = LogManager.getLogger(GoogleDriveService.class);
+    @Autowired
+    private ByteUnitFormatter byteUnitFormatter;
 
-    private static final Drive driveService = getService();
-    private static final String SERVICE_ACCOUNT_KEY_PATH = "./libs/cred.json";
-    private static final String FOLDER_ID = "1UkZq5NaJ3D4YRscX9tE7Jj2Hnb_CnOYc";
-    private static final String SUB_FOLDER_ID = "1mdvYJ-ltM4oV6LnOtAUmCZXPwG6v0Wbd";
+    Logger log = LogManager.getLogger(GoogleDriveService.class);
 
-    private static Drive getService() {
+    private final Drive driveService = getService();
+    private final String SERVICE_ACCOUNT_KEY_PATH = "./libs/cred.json";
+
+    private Drive getService() {
         // Create the credentials object
         GoogleCredentials credentials = null;
         try {
@@ -40,7 +43,8 @@ public class GoogleDriveService {
                     .fromStream(serviceAccountStream)
                     .createScoped(Collections.singleton(DriveScopes.DRIVE_FILE));
         } catch (IOException e) {
-            log.error(e);
+            log.error("Cred.json for service account not found. Put it in ./libs", e);
+            System.exit(1);
         }
 
         // Build the Drive service object
@@ -53,7 +57,7 @@ public class GoogleDriveService {
                 .build();
     }
 
-    public static void viewFiles() {
+    public void viewFiles() {
         // List all files uploaded by the service account
         String query = "mimeType != 'application/vnd.google-apps.folder'"; // Adjust query as needed
         FileList result = null;
@@ -61,7 +65,7 @@ public class GoogleDriveService {
             result = driveService.files().list()
                     .setQ(query) // Query to list all files
                     .setSpaces("drive")
-                    .setFields("nextPageToken, files(id, name)")
+                    .setFields("nextPageToken, files(id, name, size)")
                     .setPageSize(10) // Adjust page size as needed
                     .execute();
         } catch (IOException e) {
@@ -74,12 +78,13 @@ public class GoogleDriveService {
         } else {
             System.out.println("Files:");
             for (com.google.api.services.drive.model.File file : files) {
-                log.info("Name: {}, File ID: {}, Size: {}\n", file.getName(), file.getId(), file.getSize());
+                log.info("Name: {}, File ID: {}, Size: {}\n",
+                        file.getName(), file.getId(), byteUnitFormatter.format(file.getSize()));
             }
         }
     }
 
-    public static void uploadFile(java.io.File zipFile, String mimeType, String folderId) throws IOException {
+    public void uploadFile(java.io.File zipFile, String mimeType, String folderId) throws IOException {
         // Create file metadata
         com.google.api.services.drive.model.File fileMetadata = new com.google.api.services.drive.model.File();
         fileMetadata.setName(zipFile.getName());
@@ -107,7 +112,7 @@ public class GoogleDriveService {
         log.info("Download link: https://drive.usercontent.google.com/download?id={}", uploadedFile.getId());
     }
 
-    public static void deleteFile(String fileId) throws IOException {
+    public void deleteFile(String fileId) {
         // Delete the file with the given fileId
         try {
             driveService.files().delete(fileId).execute();

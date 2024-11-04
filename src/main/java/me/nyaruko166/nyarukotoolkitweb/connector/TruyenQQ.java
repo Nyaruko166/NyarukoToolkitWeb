@@ -104,8 +104,12 @@ public class TruyenQQ implements SourceConnector {
             boolean fileFormat = true;
             String fileName;
 //            log.info(imgSrc);
-            if (imgSrc.contains("googleusercontent")) {
+            String nameFromUrl = imgSrc.substring(imgSrc.lastIndexOf("/") + 1);
+            if (imgSrc.contains("googleusercontent")) { //google photos cdn
                 fileName = "%s.jpg".formatted(String.valueOf(count));
+                count++;
+            } else if (nameFromUrl.contains("-fix")) { //001-fix.jpg
+                fileName = "%s%s".formatted(String.valueOf(count), imgSrc.substring(imgSrc.lastIndexOf(".")));
                 count++;
             } else {
                 fileName = imgSrc.substring(imgSrc.lastIndexOf("/") + 1, imgSrc.lastIndexOf("?"));
