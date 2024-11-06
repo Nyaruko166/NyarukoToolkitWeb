@@ -52,6 +52,10 @@ public class Config {
                 log.warn("Catbox hash is blank");
                 log.warn("Your image will be upload anonymous");
             }
+            if (appConfig.getRootFolderId().isBlank()){
+                log.error("Root folder id is blank");
+                log.error("Please, put your folder id in ./libs/config.json");
+            }
         } catch (FileNotFoundException e) {
             log.error("Config file not found {}", e.getMessage());
         }

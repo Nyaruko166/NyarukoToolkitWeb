@@ -20,7 +20,7 @@ public class Manga {
     @Column(name = "Id")
     private Integer id;
 
-    @Column(name = "host")
+    @Column(name = "Host")
     private String host;
 
     @Column(name = "Title")

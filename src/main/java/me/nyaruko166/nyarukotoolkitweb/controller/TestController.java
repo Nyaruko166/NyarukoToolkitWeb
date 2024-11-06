@@ -24,7 +24,7 @@ public class TestController {
 //        for (Manga manga : lstManga) {
 //            System.out.println(manga.toString());
 //        }
-        googleDriveService.viewFiles();
+//        googleDriveService.viewFiles();
         return "test";
     }
 }
