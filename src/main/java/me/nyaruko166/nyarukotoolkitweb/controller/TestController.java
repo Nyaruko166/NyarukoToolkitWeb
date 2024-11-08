@@ -15,9 +15,6 @@ public class TestController {
     @Autowired
     private MangaRepository mangaRepository;
 
-    @Autowired
-    private GoogleDriveService googleDriveService;
-
     @GetMapping("/test")
     public String test() {
 //        List<Manga> lstManga = mangaRepository.findAll();

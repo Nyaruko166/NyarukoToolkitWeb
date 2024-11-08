@@ -27,8 +27,9 @@ import java.util.List;
 @Service
 public class GoogleDriveService {
 
-    //    @Autowired
-    private ByteUnitFormatter byteUnitFormatter = new ByteUnitFormatter();
+    //Todo: auto check and create req folder
+    @Autowired
+    private ByteUnitFormatter byteUnitFormatter;
 
     Logger log = LogManager.getLogger(GoogleDriveService.class);
 

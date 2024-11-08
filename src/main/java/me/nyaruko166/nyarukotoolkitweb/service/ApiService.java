@@ -5,7 +5,9 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Nullable;
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
@@ -21,23 +23,15 @@ public class ApiService {
 //            .followRedirects(true)
             .build();
 
-    public static String getRequest(String url) {
+    public static String getRequest(String url, @Nullable Headers headers) {
+        if (headers == null) headers = new Headers.Builder().build();
+
         Request request = new Request.Builder()
                 .url(url)
                 .get()
+                .headers(headers)
                 .build();
-        try (Response response = client.newCall(request).execute()) {
-            if (response.isSuccessful() && response.body() != null) {
-                // Response from the API
-                return response.body().string();
-            } else {
-                log.error("Failed to fetch data: {}", response.message());
-            }
-        } catch (IOException e) {
-            log.error(e);
-        }
-
-        return null;
+        return executeRequest(request);
     }
 
     public static String postRequest(String url, RequestBody requestBody) {
@@ -47,19 +41,19 @@ public class ApiService {
                 .post(requestBody)
                 .build();
 
-        try {
-            try (Response response = client.newCall(request).execute()) {
-                if (response.isSuccessful() && response.body() != null) {
-                    return response.body().string();
-                } else {
-                    log.error("Failed to post data: {}", response.toString());
-                }
-            }
-        } catch (IOException e) {
-            log.error(e);
-        }
+        return executeRequest(request);
+    }
 
-        return null;
+    public static String putRequest(String url, RequestBody requestBody, @Nullable Headers headers) {
+        if (headers == null) headers = new Headers.Builder().build();
+
+        Request request = new Request.Builder()
+                .url(url)
+                .headers(headers)
+                .put(requestBody)
+                .build();
+
+        return executeRequest(request);
     }
 
     public static String urlParamBuilder(String baseUrl, Map<String, String> params) {
@@ -78,4 +72,23 @@ public class ApiService {
 
     }
 
+    public static Headers headersBuilder(List<String> lstHeaders) {
+        Headers.Builder builder = new Headers.Builder();
+        lstHeaders.forEach(builder::add);
+        return builder.build();
+    }
+
+    private static String executeRequest(Request request) {
+        try (Response response = client.newCall(request).execute()) {
+            if (response.isSuccessful() && response.body() != null) {
+                // Response from the API
+                return response.body().string();
+            } else {
+                log.error("Failed call api: {}", response);
+            }
+        } catch (IOException e) {
+            log.error(e);
+        }
+        return null;
+    }
 }
